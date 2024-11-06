@@ -20,8 +20,8 @@ jobs:
           # Define the required pattern for commit messages
           PATTERN='AB#'
 
-          # Get all commit messages in the pull request
-          COMMITS=$(git log --pretty=format:"%s" origin/main..HEAD)
+          # Get all commit messages in the pull request, excluding merge commits
+          COMMITS=$(git log --pretty=format:"%s" origin/main..HEAD --no-merges)
 
           echo "Checking the following commit messages:"
           echo "$COMMITS"
