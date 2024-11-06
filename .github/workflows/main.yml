@@ -1,0 +1,24 @@
+name: Pull Request Title Validation
+
+on:
+  pull_request:
+    branches:
+      - main      # Enforce on pull requests targeting feature branches
+
+jobs:
+  validate-pr-title:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate PR title
+        run: |
+          # Define the required pattern
+          PATTERN='^AB#'
+
+          # Check the pull request title
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          if [[ ! $PR_TITLE =~ $PATTERN ]]; then
+            echo "Invalid pull request title: $PR_TITLE. The title must start with 'AB#'."
+            exit 1
+          fi
+        shell: bash
