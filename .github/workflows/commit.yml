@@ -1,9 +1,9 @@
-name: Commit Message Validation
+name: Validate Commit Messages
 
 on:
   pull_request:
     branches:
-      - main  # Replace with the branch you want to enforce the rule on
+      - main  # Target branch for pull requests
 
 jobs:
   validate-commit-messages:
@@ -12,27 +12,22 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Fetch full history to get all commits in the PR
 
-      - name: Validate commit messages
+      - name: Validate each commit message
         run: |
-          # Define the required pattern for commit messages
-          COMMIT_PATTERN='^AB#'
+          # Define the required pattern
+          PATTERN='^AB#'
 
-          # Check if there are any commits in the PR range
-          COMMITS=$(git log --format=%s ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} || echo "")
+          # Get all commit messages in the pull request
+          COMMITS=$(git log --pretty=format:"%s" origin/main..HEAD)
 
-          # If no commits are found, exit without error
-          if [[ -z "$COMMITS" ]]; then
-            echo "No new commits to validate."
-            exit 0
-          fi
-
-          # Loop through each commit message and validate
-          for COMMIT_MSG in $COMMITS; do
-            if [[ ! $COMMIT_MSG =~ $COMMIT_PATTERN ]]; then
-              echo "Invalid commit message: $COMMIT_MSG. Each commit message must start with 'AB#'."
+          # Loop through each commit message and check if it matches the pattern
+          for COMMIT_MESSAGE in $COMMITS; do
+            if [[ ! $COMMIT_MESSAGE =~ $PATTERN ]]; then
+              echo "Invalid commit message: $COMMIT_MESSAGE. Each commit message must start with 'AB#'."
               exit 1
             fi
           done
-          echo "All commit messages are valid."
         shell: bash
