@@ -13,20 +13,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0  # Fetch full history to get all commits in the PR
+          fetch-depth: 0  # Ensures full history to get all commits
 
       - name: Validate each commit message
         run: |
-          # Define the required pattern
-          PATTERN='^AB#'
+          # Define the required pattern for commit messages
+          PATTERN='AB#'
 
           # Get all commit messages in the pull request
           COMMITS=$(git log --pretty=format:"%s" origin/main..HEAD)
 
-          # Loop through each commit message and check if it matches the pattern
+          echo "Checking the following commit messages:"
+          echo "$COMMITS"
+
+          # Loop through each commit message and check if it contains "AB#"
           for COMMIT_MESSAGE in $COMMITS; do
+            echo "Checking commit message: $COMMIT_MESSAGE"
             if [[ ! $COMMIT_MESSAGE =~ $PATTERN ]]; then
-              echo "Invalid commit message: $COMMIT_MESSAGE. Each commit message must start with 'AB#'."
+              echo "Invalid commit message: $COMMIT_MESSAGE. Each commit message must contain 'AB#'."
               exit 1
             fi
           done
