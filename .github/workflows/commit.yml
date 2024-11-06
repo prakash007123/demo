@@ -3,7 +3,7 @@ name: Commit Message Validation
 on:
   pull_request:
     branches:
-      - main  # Replace with the branch you want to enforce the rule on
+      - main  # Replace with the branch you want to enforce the rule on.
 
 jobs:
   validate-commit-messages:
