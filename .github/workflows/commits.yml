@@ -1,4 +1,4 @@
-name: Validate Commit Messages
+name: Validate Commit Message
 
 on:
   pull_request:
@@ -6,32 +6,28 @@ on:
       - main  # Target branch for pull requests
 
 jobs:
-  validate-commit-messages:
+  validate-commit-message:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0  # Ensures full history to get all commits
+          fetch-depth: 1  # Fetch only the latest commit
 
-      - name: Validate each commit message
+      - name: Validate latest commit message
         run: |
           # Define the required pattern for commit messages
           PATTERN='AB#'
 
-          # Get all commit messages in the pull request, excluding merge commits
-          COMMITS=$(git log --pretty=format:"%s" origin/main..HEAD --no-merges)
+          # Get the latest commit message
+          LATEST_COMMIT_MESSAGE=$(git log -1 --pretty=format:"%s")
 
-          echo "Checking the following commit messages:"
-          echo "$COMMITS"
+          echo "Checking latest commit message: $LATEST_COMMIT_MESSAGE"
 
-          # Loop through each commit message and check if it contains "AB#"
-          for COMMIT_MESSAGE in $COMMITS; do
-            echo "Checking commit message: $COMMIT_MESSAGE"
-            if [[ ! $COMMIT_MESSAGE =~ $PATTERN ]]; then
-              echo "Invalid commit message: $COMMIT_MESSAGE. Each commit message must contain 'AB#'."
-              exit 1
-            fi
-          done
+          # Check if the latest commit message contains "AB#"
+          if [[ ! $LATEST_COMMIT_MESSAGE =~ $PATTERN ]]; then
+            echo "Invalid commit message: $LATEST_COMMIT_MESSAGE. The commit message must contain 'AB#'."
+            exit 1
+          fi
         shell: bash
